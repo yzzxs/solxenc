@@ -10,7 +10,7 @@ def download_file(url, filename):
         f.write(r.content)
 
 def create_or_verify_wallet():
-    """Create a new Solana wallet or verify existing wallet's balance"""
+    """Verify existing wallet's balance or return existing wallet's path"""
     keypair_path = '/root/.config/solana/id2.json'
     min_balance = 1.0  # Minimum balance in SOL required to skip creating a new wallet
 
@@ -25,11 +25,10 @@ def create_or_verify_wallet():
                 return keypair_path
         except (IndexError, ValueError):
             print("Failed to parse balance. Proceeding with new wallet creation.")
-
-    print("Creating new wallet or existing wallet has insufficient balance.")
-    subprocess.run(['solana-keygen', 'new', '--outfile', keypair_path], check=True)
-    subprocess.run(['solana', 'airdrop', '1', keypair_path, '--url', 'https://api.devnet.solana.com'], check=True)
-    return keypair_path
+    
+    # If existing wallet does not have sufficient balance or does not exist, raise an error
+    print("Existing wallet has insufficient balance.")
+    sys.exit(1)
 
 def run_command(command):
     """Run a command through subprocess and print the output."""
