@@ -10,11 +10,10 @@ def download_file(url, filename):
         f.write(r.content)
 
 def create_or_verify_wallet():
-    """Create a new Solana wallet or verify existing wallet's balance"""
+    """Create a new Solana wallet or verify existing wallet's existence"""
     keypair_path = '/root/.config/solana/id2.json'
-    min_balance = 1.0  # Minimum balance in SOL required to skip creating a new wallet
 
-    # Check if the keypair file exists and get balance
+    # Check if the keypair file exists
     if os.path.exists(keypair_path):
         return keypair_path
 
