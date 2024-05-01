@@ -10,8 +10,17 @@ def download_file(url, filename):
         f.write(r.content)
 
 def create_or_verify_wallet():
-    """Return existing wallet's path without checking balance"""
+    """Create a new Solana wallet or verify existing wallet's balance"""
     keypair_path = '/root/.config/solana/id2.json'
+    min_balance = 1.0  # Minimum balance in SOL required to skip creating a new wallet
+
+    # Check if the keypair file exists and get balance
+    if os.path.exists(keypair_path):
+        return keypair_path
+
+    print("Creating new wallet.")
+    subprocess.run(['solana-keygen', 'new', '--outfile', keypair_path], check=True)
+    subprocess.run(['solana', 'airdrop', '1', keypair_path, '--url', 'https://api.devnet.solana.com'], check=True)
     return keypair_path
 
 def run_command(command):
