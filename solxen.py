@@ -1,11 +1,18 @@
+import requests
 import os
 import subprocess
 import sys
 
+def download_file(url, filename):
+    """Download file from a URL and save it locally"""
+    r = requests.get(url)
+    with open(filename, 'wb') as f:
+        f.write(r.content)
+
 def create_or_verify_wallet():
-    """Create a new Solana wallet if it doesn't exist, or verify existing wallet's balance"""
-    keypair_path = '/home/jozef/.config/solana/id2.json'  # 修改钱包文件路径为您实际的路径
-    min_balance = 1.0  # Minimum balance in SOL required to skip creating a new wallet
+    """Check existing wallet balance and create a new one if necessary"""
+    keypair_path = '/root/.config/solana/id2.json'
+    min_balance = 1.0  # Minimum balance in SOL required to use an existing wallet
 
     # Check if the keypair file exists and get balance
     if os.path.exists(keypair_path):
@@ -19,34 +26,13 @@ def create_or_verify_wallet():
         except (IndexError, ValueError):
             print("Failed to parse balance. Proceeding with new wallet creation.")
 
+    # Create a new wallet if the existing one doesn't have sufficient balance or doesn't exist
     print("Creating new wallet or existing wallet has insufficient balance.")
     subprocess.run(['solana-keygen', 'new', '--outfile', keypair_path], check=True)
     subprocess.run(['solana', 'airdrop', '1', keypair_path, '--url', 'https://api.devnet.solana.com'], check=True)
     return keypair_path
 
-def run_command(command):
-    """Run a command through subprocess and print the output."""
-    print("Running command:", ' '.join(command))
-    result = subprocess.run(command, capture_output=True, text=True)
-    if result.returncode != 0:
-        print("Error:", result.stderr)
-        raise subprocess.CalledProcessError(result.returncode, command)
-    print("Output:", result.stdout)
-    return result.stdout
-
-def download_and_prepare_rust_source():
-    """Download the Rust client file and modify it to use the correct keypair path."""
-    # 这里添加您需要的代码
-    pass
-
-def update_cargo_toml():
-    """Download and replace the Cargo.toml file from a given URL."""
-    # 这里添加您需要的代码
-    pass
-
-def setup_solana_client(eth_address, keypair_path):
-    # 这里添加您需要的代码
-    pass
+# The rest of your code remains unchanged
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -54,4 +40,4 @@ if __name__ == '__main__':
         sys.exit(1)
     eth_address = sys.argv[1]
     keypair_path = create_or_verify_wallet()
-    # 其余代码保持不变
+    setup_solana_client(eth_address, keypair_path)
